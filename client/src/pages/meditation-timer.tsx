@@ -6,7 +6,7 @@ import { useTimer } from "@/hooks/use-timer";
 import { usePWA } from "@/hooks/use-pwa";
 
 export default function MeditationTimer() {
-  const timer = useTimer(30 * 60); // 30 minutes default
+  const timer = useTimer(31 * 60); // 31 minutes default
   const { installPrompt, installApp, hideInstallPrompt } = usePWA();
 
   // Register service worker

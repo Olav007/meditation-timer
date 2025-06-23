@@ -6,7 +6,7 @@ interface QuickSettingsProps {
 }
 
 export default function QuickSettings({ currentMinutes, onSetTimer }: QuickSettingsProps) {
-  const presets = [5, 10, 30, 60];
+  const presets = [5, 10, 31, 45, 60];
 
   return (
     <div className="flex justify-center space-x-4 mb-8">
