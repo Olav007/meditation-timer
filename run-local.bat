@@ -5,7 +5,7 @@ echo Checking for Python...
 python --version >nul 2>&1
 if %errorlevel% == 0 (
     echo Python found! Starting server on http://localhost:8000
-    echo Open: http://localhost:8000/static.html
+    echo Open: http://localhost:8000
     echo.
     python -m http.server 8000
 ) else (

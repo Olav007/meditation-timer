@@ -42,7 +42,7 @@ A peaceful meditation timer Progressive Web Application with a spiritual dark th
    - Install "Live Server" extension
    - Right-click `static.html` → "Open with Live Server"
 
-3. Open `http://localhost:8000/static.html` in your browser
+3. Open `http://localhost:8000` in your browser
 4. No build process required!
 
 ### Option 2: React Version
