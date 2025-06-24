@@ -3,8 +3,8 @@
 ## Common Issues and Solutions
 
 ### 1. Blank Page or Only Blue Background
-**Problem:** JavaScript not executing
-**Solution:** Must serve from web server, not open as file
+**Problem:** JavaScript not executing (usually `type="module"` issue)
+**Solution:** Fixed - script now runs as regular JavaScript
 
 ### 2. Directory Listing Instead of Timer
 **Problem:** Accessing wrong URL
