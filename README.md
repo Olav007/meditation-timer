@@ -24,8 +24,26 @@ A peaceful meditation timer Progressive Web Application with a spiritual dark th
 
 ### Option 1: Static Version (Recommended)
 1. Clone the repository
-2. Open `static.html` in your browser
-3. No build process required!
+2. **Serve via local server** (required for PWA features):
+   
+   **Python (if installed):**
+   ```bash
+   python -m http.server 8000
+   # or for Python 2: python -m SimpleHTTPServer 8000
+   ```
+   
+   **Node.js (if installed):**
+   ```bash
+   npx serve .
+   # or: npx http-server
+   ```
+   
+   **VS Code Live Server:**
+   - Install "Live Server" extension
+   - Right-click `static.html` → "Open with Live Server"
+
+3. Open `http://localhost:8000/static.html` in your browser
+4. No build process required!
 
 ### Option 2: React Version
 1. Clone the repository
