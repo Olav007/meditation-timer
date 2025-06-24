@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    <title>Meditation Timer</title>
+    <meta name="description" content="A peaceful meditation timer PWA with 31-minute countdown, spiritual dark theme, and calming atmosphere for focused meditation sessions.">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#1a0b2e">
+    <meta name="application-name" content="Meditation Timer">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Meditation Timer">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="./manifest.json">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+      
+      :root {
+        --cosmic-deep: hsl(215, 50%, 8%);
+        --cosmic-purple: hsl(264, 56%, 11%);
+        --cosmic-indigo: hsl(252, 44%, 25%);
+        --ethereal-cyan: hsl(174, 100%, 70%);
+        --soft-gray: hsl(207, 13%, 70%);
+        --muted-white: hsla(0, 0%, 100%, 0.2);
+      }
+      
+      body {
+        font-family: 'Inter', sans-serif;
+      }
+      
+      .spiritual-bg {
+        background: linear-gradient(135deg, var(--cosmic-deep) 0%, var(--cosmic-purple) 50%, var(--cosmic-indigo) 100%);
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .spiritual-bg::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: 
+          radial-gradient(circle at 20% 20%, hsla(174, 100%, 70%, 0.1) 0%, transparent 50%),
+          radial-gradient(circle at 80% 80%, hsla(174, 100%, 70%, 0.05) 0%, transparent 50%),
+          radial-gradient(circle at 40% 60%, hsla(0, 0%, 100%, 0.02) 0%, transparent 50%);
+        pointer-events: none;
+      }
+      
+      .timer-hours {
+        font-size: 1rem;
+        opacity: 0.3;
+        color: var(--soft-gray);
+      }
+      
+      .timer-minutes {
+        font-size: clamp(6rem, 12vw, 10rem);
+        color: var(--ethereal-cyan);
+        font-weight: 300;
+      }
+      
+      .timer-seconds {
+        font-size: 2.5rem;
+        color: var(--soft-gray);
+      }
+      
+      .star {
+        position: absolute;
+        background: white;
+        border-radius: 50%;
+        animation: twinkle 4s ease-in-out infinite;
+      }
+      
+      @keyframes twinkle {
+        0%, 100% { opacity: 0.3; }
+        50% { opacity: 1; }
+      }
+      
+      @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+      }
+      
+      .animate-float {
+        animation: float 6s ease-in-out infinite;
+      }
+      
+      .progress-ring {
+        transform: rotate(-90deg);
+      }
+      
+      .progress-ring-circle {
+        transition: stroke-dashoffset 0.5s ease;
+      }
+    </style>
+  </head>
+  <body class="spiritual-bg min-h-screen flex flex-col items-center justify-center text-white">
+    <div id="app"></div>
+    
+    <script type="module">
+      // Simple meditation timer without build process
+      let timeLeft = 31 * 60; // 31 minutes in seconds
+      let totalTime = 31 * 60;
+      let isRunning = false;
+      let interval = null;
+      
+      function formatTime(seconds) {
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        const secs = seconds % 60;
+        return { hours, minutes: minutes, seconds: secs };
+      }
+      
+      function updateDisplay() {
+        const time = formatTime(timeLeft);
+        const progress = (totalTime - timeLeft) / totalTime;
+        const circumference = 2 * Math.PI * 140;
+        const offset = circumference - (progress * circumference);
+        
+        document.getElementById('hours').textContent = time.hours;
+        document.getElementById('minutes').textContent = time.minutes.toString().padStart(2, '0');
+        document.getElementById('seconds').textContent = time.seconds.toString().padStart(2, '0');
+        document.getElementById('progress-circle').style.strokeDashoffset = offset;
+        document.getElementById('state').textContent = isRunning ? 'Meditating...' : timeLeft === 0 ? 'Session complete' : 'Ready to begin';
+        document.getElementById('play-btn').innerHTML = isRunning ? 
+          '<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>' :
+          '<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"></polygon></svg>';
+      }
+      
+      function toggleTimer() {
+        if (isRunning) {
+          clearInterval(interval);
+          isRunning = false;
+        } else if (timeLeft > 0) {
+          isRunning = true;
+          interval = setInterval(() => {
+            timeLeft--;
+            if (timeLeft <= 0) {
+              clearInterval(interval);
+              isRunning = false;
+              // Completion notification
+              if ('Notification' in window && Notification.permission === 'granted') {
+                new Notification('Meditation Complete', {
+                  body: 'Your meditation session has finished.'
+                });
+              }
+            }
+            updateDisplay();
+          }, 1000);
+        }
+        updateDisplay();
+      }
+      
+      function resetTimer() {
+        clearInterval(interval);
+        isRunning = false;
+        timeLeft = totalTime;
+        updateDisplay();
+      }
+      
+      function setTimer(minutes) {
+        clearInterval(interval);
+        isRunning = false;
+        totalTime = minutes * 60;
+        timeLeft = totalTime;
+        updateDisplay();
+        
+        // Update preset buttons
+        document.querySelectorAll('.preset-btn').forEach(btn => {
+          const btnMinutes = parseInt(btn.dataset.minutes);
+          if (btnMinutes === minutes) {
+            btn.style.background = 'hsla(174, 100%, 70%, 0.2)';
+            btn.style.color = 'var(--ethereal-cyan)';
+          } else {
+            btn.style.background = 'hsla(255, 255, 255, 0.05)';
+            btn.style.color = 'var(--soft-gray)';
+          }
+        });
+      }
+      
+      // Create stars
+      function createStars() {
+        for (let i = 0; i < 8; i++) {
+          const star = document.createElement('div');
+          star.className = 'star';
+          star.style.top = Math.random() * 80 + 10 + '%';
+          star.style.left = Math.random() * 80 + 10 + '%';
+          star.style.width = Math.random() * 2 + 1 + 'px';
+          star.style.height = Math.random() * 2 + 1 + 'px';
+          star.style.animationDelay = Math.random() * 4 + 's';
+          document.body.appendChild(star);
+        }
+      }
+      
+      // Initialize app
+      document.getElementById('app').innerHTML = \`
+        <div class="container mx-auto px-4 py-8 max-w-2xl relative z-10">
+          <header class="text-center mb-12 animate-float">
+            <h1 class="text-3xl md:text-4xl font-light mb-2" style="color: var(--ethereal-cyan)">
+              Meditation Timer
+            </h1>
+            <p class="text-lg opacity-80" style="color: var(--soft-gray)">
+              Find your inner peace
+            </p>
+          </header>
+          
+          <div class="relative flex items-center justify-center mb-16">
+            <svg class="progress-ring absolute" width="300" height="300" viewBox="0 0 300 300">
+              <circle
+                id="progress-circle"
+                class="progress-ring-circle"
+                cx="150"
+                cy="150"
+                r="140"
+                fill="none"
+                stroke="hsla(174, 100%, 70%, 0.2)"
+                stroke-width="2"
+                stroke-dasharray="\${2 * Math.PI * 140}"
+                stroke-dashoffset="\${2 * Math.PI * 140}"
+              />
+            </svg>
+            
+            <div class="text-center z-10">
+              <div class="flex items-center justify-center space-x-2">
+                <span id="hours" class="timer-hours font-light">0</span>
+                <span class="timer-hours">:</span>
+                <span id="minutes" class="timer-minutes font-light">31</span>
+                <span class="timer-seconds">:</span>
+                <span id="seconds" class="timer-seconds font-light">00</span>
+              </div>
+              <div class="mt-4">
+                <span id="state" class="text-sm opacity-60" style="color: var(--soft-gray)">Ready to begin</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="flex justify-center items-center space-x-6 mb-12">
+            <button
+              id="play-btn"
+              onclick="toggleTimer()"
+              class="w-16 h-16 rounded-full flex items-center justify-center text-2xl hover:scale-110 active:scale-95 transition-all duration-200 shadow-lg"
+              style="background: var(--ethereal-cyan); color: var(--cosmic-deep)"
+            >
+              <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                <polygon points="5,3 19,12 5,21"></polygon>
+              </svg>
+            </button>
+            
+            <button
+              onclick="resetTimer()"
+              class="w-12 h-12 rounded-full flex items-center justify-center hover:scale-110 active:scale-95 transition-all duration-200"
+              style="background: var(--muted-white); color: var(--soft-gray)"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"></path>
+              </svg>
+            </button>
+          </div>
+          
+          <div class="flex justify-center space-x-4 mb-8">
+            <button onclick="setTimer(5)" data-minutes="5" class="preset-btn px-4 py-2 rounded-full text-sm transition-all duration-200" style="background: hsla(255, 255, 255, 0.05); color: var(--soft-gray)">5m</button>
+            <button onclick="setTimer(10)" data-minutes="10" class="preset-btn px-4 py-2 rounded-full text-sm transition-all duration-200" style="background: hsla(255, 255, 255, 0.05); color: var(--soft-gray)">10m</button>
+            <button onclick="setTimer(31)" data-minutes="31" class="preset-btn px-4 py-2 rounded-full text-sm transition-all duration-200" style="background: hsla(174, 100%, 70%, 0.2); color: var(--ethereal-cyan)">31m</button>
+            <button onclick="setTimer(45)" data-minutes="45" class="preset-btn px-4 py-2 rounded-full text-sm transition-all duration-200" style="background: hsla(255, 255, 255, 0.05); color: var(--soft-gray)">45m</button>
+            <button onclick="setTimer(60)" data-minutes="60" class="preset-btn px-4 py-2 rounded-full text-sm transition-all duration-200" style="background: hsla(255, 255, 255, 0.05); color: var(--soft-gray)">60m</button>
+          </div>
+        </div>
+      \`;
+      
+      // Initialize
+      createStars();
+      updateDisplay();
+      
+      // Request notification permission
+      if ('Notification' in window && Notification.permission === 'default') {
+        Notification.requestPermission();
+      }
+      
+      // Register service worker
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js')
+          .then(() => console.log('Service Worker registered'))
+          .catch((error) => console.log('Service Worker registration failed:', error));
+      }
+      
+      // Make functions global
+      window.toggleTimer = toggleTimer;
+      window.resetTimer = resetTimer;
+      window.setTimer = setTimer;
+    </script>
+  </body>
+</html>
