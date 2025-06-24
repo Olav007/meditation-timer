@@ -1,25 +1,31 @@
 @echo off
 echo Starting Meditation Timer...
 echo.
-echo Checking for Python...
-python --version >nul 2>&1
+echo Checking for Node.js...
+node --version >nul 2>&1
 if %errorlevel% == 0 (
-    echo Python found! Starting server on http://localhost:8000
+    echo Node.js found! Starting server on http://localhost:8000
     echo Open: http://localhost:8000
     echo.
-    python -m http.server 8000
+    echo Press Ctrl+C to stop the server
+    npx serve . -p 8000 -s
 ) else (
-    echo Python not found. Checking for Node.js...
-    node --version >nul 2>&1
+    echo Node.js not found. Checking for Python...
+    python --version >nul 2>&1
     if %errorlevel% == 0 (
-        echo Node.js found! Installing serve...
-        npx serve . -p 8000
-    ) else (
-        echo Neither Python nor Node.js found.
-        echo Please install one of them or use VS Code Live Server extension.
+        echo Python found! Starting server on http://localhost:8000
+        echo Open: http://localhost:8000
         echo.
-        echo Alternative: Open static.html directly in browser
-        echo ^(PWA features won't work, but basic timer will^)
+        echo Press Ctrl+C to stop the server
+        python -m http.server 8000
+    ) else (
+        echo Neither Node.js nor Python found.
+        echo Please install Node.js from https://nodejs.org
+        echo.
+        echo Alternative: Use VS Code Live Server extension
+        echo 1. Install VS Code
+        echo 2. Install "Live Server" extension
+        echo 3. Right-click index.html and select "Open with Live Server"
         pause
     )
 )
