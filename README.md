@@ -15,30 +15,33 @@ A peaceful meditation timer Progressive Web Application with a spiritual dark th
 
 ## Technology Stack
 
-- **Frontend**: React 18 + TypeScript + Vite
-- **UI Components**: Radix UI + shadcn/ui + Tailwind CSS
-- **Routing**: Wouter (lightweight React router)
-- **State Management**: React hooks + TanStack Query
-- **Backend**: Express.js + TypeScript
-- **Database**: Drizzle ORM + PostgreSQL (Neon)
+- **Frontend**: Pure HTML, CSS, and JavaScript (no build process)
+- **Styling**: Tailwind CSS via CDN + Custom CSS
 - **PWA**: Service Worker + Web Manifest
+- **Deployment**: Static hosting (Replit, Netlify, Vercel, GitHub Pages)
 
 ## Installation
 
+### Option 1: Static Version (Recommended)
 1. Clone the repository
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Start the development server:
-   ```bash
-   npm run dev
-   ```
+2. Open `static.html` in your browser
+3. No build process required!
+
+### Option 2: React Version
+1. Clone the repository
+2. Install dependencies: `npm install`
+3. Start development server: `npm run dev`
 4. Open your browser to `http://localhost:5000`
 
 ## Deployment
 
-The application is configured for deployment on Replit with autoscale capabilities. The recommended deployment URL is `meditation-timer.replit.app`.
+### Static Deployment (Recommended)
+- Upload `static.html` and `client/public/` folder to any static hosting service
+- Recommended URL: `meditation-timer.replit.app`
+- Works with: Netlify, Vercel, GitHub Pages, Replit Static
+
+### Full-Stack Deployment
+- Use the React version with Express.js backend on Replit autoscale
 
 ## PWA Installation
 
