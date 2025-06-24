@@ -103,6 +103,7 @@ This is a full-stack Progressive Web Application (PWA) for a meditation timer bu
 
 ```
 Changelog:
+- June 24, 2025. Fixed JavaScript module issue and added PowerShell script for Windows
 - June 24, 2025. Added static version with index.html for easier local development
 - June 23, 2025. Initial setup with React and static versions
 ```
