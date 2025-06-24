@@ -105,19 +105,175 @@
     </style>
   </head>
   <body class="spiritual-bg min-h-screen flex flex-col items-center justify-center text-white">
-    <div id="app"></div>
-    
+    <!-- Timer App Content -->
+    <div class="text-center max-w-md mx-auto p-8">
+      <!-- Timer Display -->
+      <div class="mb-8">
+        <div id="timer-display" class="font-mono text-6xl md:text-8xl font-bold mb-4">
+          <span id="hours" class="text-xs opacity-40">0</span>:<span id="minutes" class="text-cyan-300">31</span>:<span id="seconds" class="text-gray-400 text-4xl md:text-6xl">00</span>
+        </div>
+        <div id="timer-state" class="text-lg text-gray-300 mb-6">Ready to begin</div>
+      </div>
+
+      <!-- Timer Controls -->
+      <div class="flex gap-4 justify-center mb-8">
+        <button id="toggle-btn" class="bg-cyan-500 hover:bg-cyan-400 text-white px-8 py-3 rounded-lg font-semibold transition-colors">
+          Start
+        </button>
+        <button id="reset-btn" class="bg-gray-600 hover:bg-gray-500 text-white px-8 py-3 rounded-lg font-semibold transition-colors">
+          Reset
+        </button>
+      </div>
+
+      <!-- Quick Settings -->
+      <div class="mb-6">
+        <div class="text-sm text-gray-400 mb-3">Quick Settings</div>
+        <div class="flex flex-wrap gap-2 justify-center">
+          <button class="preset-btn bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded text-sm transition-colors" data-minutes="5">5m</button>
+          <button class="preset-btn bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded text-sm transition-colors" data-minutes="10">10m</button>
+          <button class="preset-btn bg-cyan-600 hover:bg-cyan-500 text-white px-4 py-2 rounded text-sm transition-colors" data-minutes="31">31m</button>
+          <button class="preset-btn bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded text-sm transition-colors" data-minutes="45">45m</button>
+          <button class="preset-btn bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded text-sm transition-colors" data-minutes="60">60m</button>
+        </div>
+      </div>
+
+      <!-- PWA Install -->
+      <div id="pwa-install" class="hidden">
+        <button id="install-btn" class="bg-purple-600 hover:bg-purple-500 text-white px-6 py-2 rounded text-sm transition-colors">
+          Install App
+        </button>
+      </div>
+    </div>
+
     <script>
-      // Simple meditation timer without build process
+      // Meditation timer functionality
       let timeLeft = 31 * 60; // 31 minutes in seconds
       let totalTime = 31 * 60;
       let isRunning = false;
       let interval = null;
       
-      function formatTime(seconds) {
-        const hours = Math.floor(seconds / 3600);
-        const minutes = Math.floor((seconds % 3600) / 60);
-        const secs = seconds % 60;
+      // Get DOM elements
+      const hoursEl = document.getElementById('hours');
+      const minutesEl = document.getElementById('minutes');
+      const secondsEl = document.getElementById('seconds');
+      const stateEl = document.getElementById('timer-state');
+      const toggleBtn = document.getElementById('toggle-btn');
+      const resetBtn = document.getElementById('reset-btn');
+      const presetBtns = document.querySelectorAll('.preset-btn');
+      
+      function updateDisplay() {
+        const hours = Math.floor(timeLeft / 3600);
+        const minutes = Math.floor((timeLeft % 3600) / 60);
+        const seconds = timeLeft % 60;
+        
+        hoursEl.textContent = hours;
+        minutesEl.textContent = minutes;
+        secondsEl.textContent = seconds.toString().padStart(2, '0');
+      }
+      
+      function startTimer() {
+        if (interval) return;
+        isRunning = true;
+        toggleBtn.textContent = 'Pause';
+        stateEl.textContent = 'Meditating...';
+        
+        interval = setInterval(() => {
+          timeLeft--;
+          updateDisplay();
+          
+          if (timeLeft <= 0) {
+            stopTimer();
+            stateEl.textContent = 'Meditation Complete!';
+            // Play completion sound (basic beep)
+            try {
+              const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+              const oscillator = audioContext.createOscillator();
+              const gainNode = audioContext.createGain();
+              
+              oscillator.connect(gainNode);
+              gainNode.connect(audioContext.destination);
+              
+              oscillator.frequency.value = 528; // Meditation frequency
+              gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+              gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1);
+              
+              oscillator.start(audioContext.currentTime);
+              oscillator.stop(audioContext.currentTime + 1);
+            } catch (e) {
+              console.log('Audio not available');
+            }
+          }
+        }, 1000);
+      }
+      
+      function pauseTimer() {
+        if (!interval) return;
+        clearInterval(interval);
+        interval = null;
+        isRunning = false;
+        toggleBtn.textContent = 'Start';
+        stateEl.textContent = 'Paused';
+      }
+      
+      function stopTimer() {
+        if (interval) {
+          clearInterval(interval);
+          interval = null;
+        }
+        isRunning = false;
+        toggleBtn.textContent = 'Start';
+      }
+      
+      function resetTimer() {
+        stopTimer();
+        timeLeft = totalTime;
+        updateDisplay();
+        stateEl.textContent = 'Ready to begin';
+      }
+      
+      function setTimer(minutes) {
+        stopTimer();
+        totalTime = minutes * 60;
+        timeLeft = totalTime;
+        updateDisplay();
+        stateEl.textContent = 'Ready to begin';
+        
+        // Update preset button styles
+        presetBtns.forEach(btn => {
+          btn.classList.remove('bg-cyan-600', 'hover:bg-cyan-500');
+          btn.classList.add('bg-gray-700', 'hover:bg-gray-600');
+        });
+        
+        const activeBtn = document.querySelector(`[data-minutes="${minutes}"]`);
+        if (activeBtn) {
+          activeBtn.classList.remove('bg-gray-700', 'hover:bg-gray-600');
+          activeBtn.classList.add('bg-cyan-600', 'hover:bg-cyan-500');
+        }
+      }
+      
+      // Event listeners
+      toggleBtn.addEventListener('click', () => {
+        if (isRunning) {
+          pauseTimer();
+        } else {
+          startTimer();
+        }
+      });
+      
+      resetBtn.addEventListener('click', resetTimer);
+      
+      presetBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const minutes = parseInt(btn.dataset.minutes);
+          setTimer(minutes);
+        });
+      });
+      
+      // Initialize display
+      updateDisplay();
+    </script>
+  </body>
+</html>
         return { hours, minutes: minutes, seconds: secs };
       }
       
