@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    <title>Meditation Timer (TypeScript)</title>
+    <meta name="description" content="A peaceful meditation timer PWA with TypeScript support">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#1a0b2e">
+    <link rel="manifest" href="./manifest.json">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+      
+      :root {
+        --cosmic-deep: hsl(215, 50%, 8%);
+        --cosmic-purple: hsl(264, 56%, 11%);
+        --cosmic-indigo: hsl(252, 44%, 25%);
+        --ethereal-cyan: hsl(174, 100%, 70%);
+        --soft-gray: hsl(210, 20%, 60%);
+        --muted-white: hsla(0, 0%, 100%, 0.05);
+      }
+      
+      body {
+        font-family: 'Inter', sans-serif;
+        overflow-x: hidden;
+      }
+      
+      .spiritual-bg {
+        background: linear-gradient(135deg, var(--cosmic-deep) 0%, var(--cosmic-purple) 35%, var(--cosmic-indigo) 70%, hsl(240, 44%, 35%) 100%);
+        min-height: 100vh;
+        position: relative;
+      }
+      
+      .spiritual-bg::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: 
+          radial-gradient(circle at 20% 80%, hsla(264, 56%, 20%, 0.3) 0%, transparent 50%),
+          radial-gradient(circle at 80% 20%, hsla(174, 100%, 70%, 0.1) 0%, transparent 50%),
+          radial-gradient(circle at 40% 40%, hsla(252, 44%, 25%, 0.2) 0%, transparent 50%);
+        pointer-events: none;
+      }
+      
+      @keyframes twinkle {
+        0%, 100% { opacity: 0.3; transform: scale(0.8); }
+        50% { opacity: 1; transform: scale(1.2); }
+      }
+      
+      .star {
+        position: absolute;
+        width: 2px;
+        height: 2px;
+        background: var(--ethereal-cyan);
+        border-radius: 50%;
+        animation: twinkle 3s ease-in-out infinite;
+        pointer-events: none;
+      }
+    </style>
+  </head>
+  <body class="spiritual-bg min-h-screen flex flex-col items-center justify-center text-white">
+    <!-- Timer App Content -->
+    <div class="text-center max-w-md mx-auto p-8">
+      <!-- Timer Display -->
+      <div class="mb-8">
+        <div id="timer-display" class="font-mono text-6xl md:text-8xl font-bold mb-4">
+          <span id="hours" class="text-xs opacity-40">0</span>:<span id="minutes" class="text-cyan-300">31</span>:<span id="seconds" class="text-gray-400 text-4xl md:text-6xl">00</span>
+        </div>
+        <div id="timer-state" class="text-lg text-gray-300 mb-6">Ready to begin</div>
+      </div>
+
+      <!-- Timer Controls -->
+      <div class="flex gap-4 justify-center mb-8">
+        <button id="toggle-btn" class="bg-cyan-500 hover:bg-cyan-400 text-white px-8 py-3 rounded-lg font-semibold transition-colors">
+          Start
+        </button>
+        <button id="reset-btn" class="bg-gray-600 hover:bg-gray-500 text-white px-8 py-3 rounded-lg font-semibold transition-colors">
+          Reset
+        </button>
+      </div>
+
+      <!-- Quick Settings -->
+      <div class="mb-6">
+        <div class="text-sm text-gray-400 mb-3">Quick Settings</div>
+        <div class="flex flex-wrap gap-2 justify-center">
+          <button class="preset-btn bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded text-sm transition-colors" data-minutes="5">5m</button>
+          <button class="preset-btn bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded text-sm transition-colors" data-minutes="10">10m</button>
+          <button class="preset-btn bg-cyan-600 hover:bg-cyan-500 text-white px-4 py-2 rounded text-sm transition-colors" data-minutes="31">31m</button>
+          <button class="preset-btn bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded text-sm transition-colors" data-minutes="45">45m</button>
+          <button class="preset-btn bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded text-sm transition-colors" data-minutes="60">60m</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Floating Stars -->
+    <div class="star" style="top: 20%; left: 15%; animation-delay: 0s;"></div>
+    <div class="star" style="top: 30%; left: 85%; animation-delay: 1s;"></div>
+    <div class="star" style="top: 60%; left: 25%; animation-delay: 2s;"></div>
+    <div class="star" style="top: 80%; left: 75%; animation-delay: 1.5s;"></div>
+    <div class="star" style="top: 15%; left: 65%; animation-delay: 3s;"></div>
+    <div class="star" style="top: 70%; left: 10%; animation-delay: 2.5s;"></div>
+
+    <!-- TypeScript via esbuild JIT compilation -->
+    <script type="module">
+      import { build } from 'https://unpkg.com/esbuild-wasm@0.19.5/esm/browser.js';
+      
+      // Fetch and compile TypeScript on-demand
+      async function loadTypeScript() {
+        try {
+          const response = await fetch('./timer.ts');
+          const tsCode = await response.text();
+          
+          const result = await build({
+            stdin: {
+              contents: tsCode,
+              loader: 'ts',
+            },
+            format: 'iife',
+            target: 'es2020',
+            write: false,
+          });
+          
+          const jsCode = result.outputFiles[0].text;
+          eval(jsCode);
+        } catch (error) {
+          console.error('TypeScript compilation failed:', error);
+          // Fallback to vanilla JS version
+          loadVanillaJS();
+        }
+      }
+
+      function loadVanillaJS() {
+        // Fallback vanilla JS implementation
+        console.log('Loading vanilla JavaScript fallback');
+        // Load the existing JS from index.html
+        const script = document.createElement('script');
+        script.src = './timer-fallback.js';
+        document.body.appendChild(script);
+      }
+
+      // Load TypeScript with JIT compilation
+      loadTypeScript();
+    </script>
+  </body>
+</html>
