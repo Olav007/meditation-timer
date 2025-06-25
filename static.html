@@ -182,7 +182,22 @@
             btn.style.background = 'hsla(174, 100%, 70%, 0.2)';
             btn.style.color = 'var(--ethereal-cyan)';
           } else {
-            btn.style.background = 'hsla(255, 255, 255, 0.05)';
+            btn.style.background = 'hsla(252, 44%, 25%, 0.5)';
+            btn.style.color = 'var(--soft-gray)';
+          }
+        });
+        
+        // Update header title
+        const headerTitle = document.getElementById('header-title');
+        if (headerTitle) {
+          headerTitle.textContent = timeLeft > 0 && isRunning ? 'Meditating' : 'Meditation Timer';
+        }
+        
+        // Hide/show quick settings during meditation
+        const quickSettings = document.querySelector('.quick-settings');
+        if (quickSettings) {
+          quickSettings.style.display = (timeLeft > 0 && isRunning) ? 'none' : 'block';
+        }ound = 'hsla(255, 255, 255, 0.05)';
             btn.style.color = 'var(--soft-gray)';
           }
         });

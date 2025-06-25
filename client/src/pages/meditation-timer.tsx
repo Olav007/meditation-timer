@@ -6,7 +6,7 @@ import { useTimer } from "@/hooks/use-timer";
 import { usePWA } from "@/hooks/use-pwa";
 
 export default function MeditationTimer() {
-  const timer = useTimer(31 * 60); // 31 minutes default
+  const timer = useTimer(31); // 31 minutes default
   const { installPrompt, installApp, hideInstallPrompt } = usePWA();
 
   // Register service worker
@@ -75,11 +75,13 @@ export default function MeditationTimer() {
           showMeditationControls={timer.hasStarted}
         />
         
-        {/* Quick Settings */}
-        <QuickSettings
-          currentMinutes={timer.totalMinutes}
-          onSetTimer={timer.setTimer}
-        />
+        {/* Quick Settings - hidden during meditation */}
+        {!timer.hasStarted && (
+          <QuickSettings
+            currentMinutes={timer.totalMinutes}
+            onSetTimer={timer.setTimer}
+          />
+        )}
         
         {/* PWA Install Prompt */}
         {installPrompt && (
