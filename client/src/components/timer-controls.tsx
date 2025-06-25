@@ -27,11 +27,13 @@ export default function TimerControls({
         {/* Pause/Resume Button */}
         <Button
           onClick={onToggle}
-          className="w-16 h-16 rounded-full flex items-center justify-center text-2xl hover:scale-110 active:scale-95 transition-all duration-200 shadow-lg"
+          className="w-16 h-16 rounded-full flex items-center justify-center text-2xl hover:scale-110 active:scale-95 transition-all duration-150 shadow-lg touch-manipulation select-none"
           style={{ 
             background: 'var(--ethereal-cyan)',
             color: 'var(--cosmic-deep)'
           }}
+          onMouseDown={(e) => e.preventDefault()}
+          onTouchStart={(e) => e.preventDefault()}
         >
           {isRunning ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6" />}
         </Button>
@@ -40,11 +42,13 @@ export default function TimerControls({
         <Button
           onClick={onStop}
           variant="ghost"
-          className="w-12 h-12 rounded-full flex items-center justify-center hover:scale-110 active:scale-95 transition-all duration-200"
+          className="w-12 h-12 rounded-full flex items-center justify-center hover:scale-110 active:scale-95 transition-all duration-150 touch-manipulation select-none"
           style={{ 
             background: 'var(--muted-white)',
             color: 'var(--soft-gray)'
           }}
+          onMouseDown={(e) => e.preventDefault()}
+          onTouchStart={(e) => e.preventDefault()}
         >
           <Square className="w-5 h-5" />
         </Button>
@@ -53,11 +57,13 @@ export default function TimerControls({
         <Button
           onClick={onReset}
           variant="ghost"
-          className="w-12 h-12 rounded-full flex items-center justify-center hover:scale-110 active:scale-95 transition-all duration-200"
+          className="w-12 h-12 rounded-full flex items-center justify-center hover:scale-110 active:scale-95 transition-all duration-150 touch-manipulation select-none"
           style={{ 
             background: 'var(--muted-white)',
             color: 'var(--soft-gray)'
           }}
+          onMouseDown={(e) => e.preventDefault()}
+          onTouchStart={(e) => e.preventDefault()}
         >
           <RotateCcw className="w-5 h-5" />
         </Button>
@@ -70,11 +76,13 @@ export default function TimerControls({
       {/* Start/Pause Button */}
       <Button
         onClick={onToggle}
-        className="w-16 h-16 rounded-full flex items-center justify-center text-2xl hover:scale-110 active:scale-95 transition-all duration-200 shadow-lg"
+        className="w-16 h-16 rounded-full flex items-center justify-center text-2xl hover:scale-110 active:scale-95 transition-all duration-150 shadow-lg touch-manipulation select-none"
         style={{ 
           background: 'var(--ethereal-cyan)',
           color: 'var(--cosmic-deep)'
         }}
+        onMouseDown={(e) => e.preventDefault()}
+        onTouchStart={(e) => e.preventDefault()}
       >
         {isRunning ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6" />}
       </Button>
@@ -85,11 +93,13 @@ export default function TimerControls({
       <Button
         onClick={onTestSound}
         variant="ghost"
-        className="w-12 h-12 rounded-full flex items-center justify-center hover:scale-110 active:scale-95 transition-all duration-200"
+        className="w-12 h-12 rounded-full flex items-center justify-center hover:scale-110 active:scale-95 transition-all duration-150 touch-manipulation select-none"
         style={{ 
           background: 'var(--muted-white)',
           color: 'var(--soft-gray)'
         }}
+        onMouseDown={(e) => e.preventDefault()}
+        onTouchStart={(e) => e.preventDefault()}
       >
         <Volume2 className="w-5 h-5" />
       </Button>
