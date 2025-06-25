@@ -56,11 +56,11 @@ export function useTimer(initialMinutes: number = 31) {
   }, [isRunning]);
 
   const reset = useCallback(() => {
-    setIsRunning(false);
+    setIsRunning(true);
     setIsPaused(false);
-    setHasStarted(false);
+    setHasStarted(true);
     setTimeLeft(totalTime);
-    wakeLock.release();
+    wakeLock.request();
   }, [totalTime]);
 
   const stop = useCallback(() => {

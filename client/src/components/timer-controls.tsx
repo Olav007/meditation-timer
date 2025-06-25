@@ -79,18 +79,7 @@ export default function TimerControls({
         {isRunning ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6" />}
       </Button>
       
-      {/* Reset Button */}
-      <Button
-        onClick={onReset}
-        variant="ghost"
-        className="w-12 h-12 rounded-full flex items-center justify-center hover:scale-110 active:scale-95 transition-all duration-200"
-        style={{ 
-          background: 'var(--muted-white)',
-          color: 'var(--soft-gray)'
-        }}
-      >
-        <RotateCcw className="w-5 h-5" />
-      </Button>
+      
 
       {/* Test Sound Button */}
       <Button
