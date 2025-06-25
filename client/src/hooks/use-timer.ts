@@ -15,8 +15,8 @@ export function useTimer(initialMinutes: number = 31) {
   const seconds = timeLeft % 60;
   const progress = totalTime > 0 ? (totalTime - timeLeft) / totalTime : 0;
 
-  const playCompletionSound = useCallback(() => {
-    // Create a simple beep sound
+  const playDongSound = useCallback(() => {
+    // Create a meditation bell/dong sound
     const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
     const oscillator = audioContext.createOscillator();
     const gainNode = audioContext.createGain();
@@ -24,23 +24,37 @@ export function useTimer(initialMinutes: number = 31) {
     oscillator.connect(gainNode);
     gainNode.connect(audioContext.destination);
     
-    oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1);
+    // Lower frequency for a deeper, more calming sound
+    oscillator.frequency.setValueAtTime(440, audioContext.currentTime); // A note
+    oscillator.frequency.exponentialRampToValueAtTime(220, audioContext.currentTime + 0.5); // Drop to lower A
+    
+    gainNode.gain.setValueAtTime(0.4, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 2);
     
     oscillator.start(audioContext.currentTime);
-    oscillator.stop(audioContext.currentTime + 1);
+    oscillator.stop(audioContext.currentTime + 2);
+  }, []);
+
+  const playCompletionSound = useCallback(() => {
+    // Triple dong for completion
+    playDongSound();
+    setTimeout(() => playDongSound(), 300);
+    setTimeout(() => playDongSound(), 600);
+  }, [playDongSound]);
+
+  const triggerVibration = useCallback(() => {
+    if ('vibrate' in navigator) {
+      navigator.vibrate([200, 100, 200]); // Short-pause-short vibration pattern
+    }
   }, []);
 
   const testSound = useCallback(() => {
-    // Start a 5-second test timer
-    setTotalTime(5);
-    setTimeLeft(5);
-    setIsRunning(true);
-    setHasStarted(true);
-    setIsPaused(false);
-    wakeLock.request();
-  }, []);
+    // Play a single dong sound for testing
+    playDongSound();
+    if ('vibrate' in navigator) {
+      navigator.vibrate(200); // Test vibration
+    }
+  }, [playDongSound]);
 
   const toggle = useCallback(() => {
     if (isRunning) {
@@ -85,11 +99,24 @@ export function useTimer(initialMinutes: number = 31) {
     if (isRunning && timeLeft > 0) {
       intervalRef.current = setInterval(() => {
         setTimeLeft((prev) => {
-          if (prev <= 1) {
+          const newTimeLeft = prev - 1;
+          
+          // Play dong every 10 seconds (but not at 0)
+          if (newTimeLeft > 0 && newTimeLeft % 10 === 0) {
+            playDongSound();
+          }
+          
+          // Vibrate after 30 seconds have passed (every 30 seconds)
+          if (newTimeLeft > 0 && (totalTime - newTimeLeft) % 30 === 0 && (totalTime - newTimeLeft) > 0) {
+            triggerVibration();
+          }
+          
+          if (newTimeLeft <= 0) {
             setIsRunning(false);
             setHasStarted(false);
             wakeLock.release();
             playCompletionSound();
+            triggerVibration();
             
             // Show notification
             if ('Notification' in window && Notification.permission === 'granted') {
@@ -101,7 +128,7 @@ export function useTimer(initialMinutes: number = 31) {
             
             return 0;
           }
-          return prev - 1;
+          return newTimeLeft;
         });
       }, 1000);
     } else {
@@ -117,7 +144,7 @@ export function useTimer(initialMinutes: number = 31) {
         intervalRef.current = null;
       }
     };
-  }, [isRunning, timeLeft, playCompletionSound]);
+  }, [isRunning, timeLeft, totalTime, playCompletionSound, playDongSound, triggerVibration]);
 
   // Handle page visibility change to maintain wake lock
   useEffect(() => {
