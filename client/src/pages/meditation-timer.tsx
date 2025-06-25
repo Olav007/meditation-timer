@@ -51,11 +51,8 @@ export default function MeditationTimer() {
         {/* Header */}
         <header className="text-center mb-12 animate-float">
           <h1 className="text-3xl md:text-4xl font-light mb-2" style={{ color: 'var(--ethereal-cyan)' }}>
-            Meditation Timer
+            {timer.hasStarted ? 'Meditating' : 'Meditation Timer'}
           </h1>
-          <p className="text-lg opacity-80" style={{ color: 'var(--soft-gray)' }}>
-            Find your inner peace
-          </p>
         </header>
         
         {/* Timer Display */}
@@ -70,8 +67,12 @@ export default function MeditationTimer() {
         {/* Timer Controls */}
         <TimerControls
           isRunning={timer.isRunning}
+          isPaused={timer.isPaused}
           onToggle={timer.toggle}
           onReset={timer.reset}
+          onStop={timer.stop}
+          onTestSound={timer.testSound}
+          showMeditationControls={timer.hasStarted}
         />
         
         {/* Quick Settings */}

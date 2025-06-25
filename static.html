@@ -206,12 +206,9 @@
       document.getElementById('app').innerHTML = \`
         <div class="container mx-auto px-4 py-8 max-w-2xl relative z-10">
           <header class="text-center mb-12 animate-float">
-            <h1 class="text-3xl md:text-4xl font-light mb-2" style="color: var(--ethereal-cyan)">
+            <h1 id="header-title" class="text-3xl md:text-4xl font-light mb-2" style="color: var(--ethereal-cyan)">
               Meditation Timer
             </h1>
-            <p class="text-lg opacity-80" style="color: var(--soft-gray)">
-              Find your inner peace
-            </p>
           </header>
           
           <div class="relative flex items-center justify-center mb-16">
@@ -232,15 +229,13 @@
             
             <div class="text-center z-10">
               <div class="flex items-center justify-center space-x-2">
-                <span id="hours" class="timer-hours font-light">0</span>
-                <span class="timer-hours">:</span>
+                <span id="hours" class="timer-seconds font-light">0</span>
+                <span class="timer-seconds">:</span>
                 <span id="minutes" class="timer-minutes font-light">31</span>
                 <span class="timer-seconds">:</span>
-                <span id="seconds" class="timer-seconds font-light">00</span>
+                <span id="seconds" class="text-5xl md:text-6xl font-light">00</span>
               </div>
-              <div class="mt-4">
-                <span id="state" class="text-sm opacity-60" style="color: var(--soft-gray)">Ready to begin</span>
-              </div>
+              
             </div>
           </div>
           

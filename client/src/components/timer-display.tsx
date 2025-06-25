@@ -32,8 +32,8 @@ export default function TimerDisplay({ hours, minutes, seconds, state, progress 
       <div className="text-center z-10">
         <div className="flex items-center justify-center space-x-2">
           {/* Hours */}
-          <span className="timer-hours font-light">{hours}</span>
-          <span className="timer-hours">:</span>
+          <span className="timer-seconds font-light">{hours}</span>
+          <span className="timer-seconds">:</span>
           
           {/* Minutes */}
           <span className="timer-minutes font-light">
@@ -42,15 +42,8 @@ export default function TimerDisplay({ hours, minutes, seconds, state, progress 
           <span className="timer-seconds">:</span>
           
           {/* Seconds */}
-          <span className="timer-seconds font-light">
+          <span className="text-5xl md:text-6xl font-light">
             {seconds.toString().padStart(2, '0')}
-          </span>
-        </div>
-        
-        {/* Timer State */}
-        <div className="mt-4">
-          <span className="text-sm opacity-60" style={{ color: 'var(--soft-gray)' }}>
-            {state}
           </span>
         </div>
       </div>
