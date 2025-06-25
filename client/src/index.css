@@ -127,8 +127,17 @@
 }
 
 .timer-seconds {
-  font-size: 2.5rem;
+  font-size: 1.5rem;
   color: var(--soft-gray);
+  width: 2ch;
+  text-align: center;
+}
+
+.timer-colon {
+  font-size: 1.5rem;
+  color: var(--soft-gray);
+  width: 0.5ch;
+  text-align: center;
 }
 
 @media (max-width: 640px) {
@@ -136,7 +145,12 @@
     font-size: clamp(4rem, 15vw, 8rem);
   }
   .timer-seconds {
-    font-size: 2rem;
+    font-size: 1.2rem;
+    width: 2ch;
+  }
+  .timer-colon {
+    font-size: 1.2rem;
+    width: 0.5ch;
   }
 }
 

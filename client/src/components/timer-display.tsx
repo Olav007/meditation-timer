@@ -30,19 +30,25 @@ export default function TimerDisplay({ hours, minutes, seconds, state, progress 
       
       {/* Timer Display */}
       <div className="text-center z-10">
-        <div className="flex items-center justify-center space-x-2">
-          {/* Hours */}
-          <span className="timer-seconds font-light">{hours}</span>
-          <span className="timer-seconds">:</span>
+        <div className="flex items-baseline justify-center">
+          {/* Hours - only show if > 0 */}
+          {hours > 0 && (
+            <>
+              <span className="timer-seconds font-light tabular-nums">
+                {hours.toString().padStart(2, '0')}
+              </span>
+              <span className="timer-colon">:</span>
+            </>
+          )}
           
           {/* Minutes */}
-          <span className="timer-minutes font-light">
+          <span className="timer-minutes font-light tabular-nums" style={{ minWidth: '4ch' }}>
             {minutes.toString().padStart(2, '0')}
           </span>
-          <span className="timer-seconds">:</span>
+          <span className="timer-colon">:</span>
           
           {/* Seconds */}
-          <span className="text-5xl md:text-6xl font-light">
+          <span className="timer-seconds font-light tabular-nums">
             {seconds.toString().padStart(2, '0')}
           </span>
         </div>
