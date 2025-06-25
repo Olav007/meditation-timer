@@ -7,9 +7,8 @@ channel = "stable-24_05"
 packages = ["python312Packages.hist"]
 
 [deployment]
-deploymentTarget = "autoscale"
-build = ["npm", "run", "build"]
-run = ["npm", "run", "start"]
+deploymentTarget = "static"
+publicDir = "."
 
 [[ports]]
 localPort = 5000
