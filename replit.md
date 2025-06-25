@@ -99,10 +99,19 @@ This is a full-stack Progressive Web Application (PWA) for a meditation timer bu
 - **Environment**: Production mode with NODE_ENV=production
 - **Database**: PostgreSQL 16 module enabled in Replit
 
+## Deployment Notes
+
+The application is currently configured as a static deployment in `.replit`, but this is a full-stack Node.js application. For proper deployment:
+
+1. **Current Workaround**: Built production files and copied index.html to root for static deployment compatibility
+2. **Recommended**: Change deployment configuration from "static" to "autoscale" for full-stack functionality
+3. **Production Build**: Uses `npm run build` to create optimized client and server bundles in `dist/`
+
 ## Changelog
 
 ```
 Changelog:
+- June 25, 2025. Fixed cross-env dependency, CSS import order, and deployment build process
 - June 24, 2025. Fixed JavaScript module issue and added PowerShell script for Windows
 - June 24, 2025. Added static version with index.html for easier local development
 - June 23, 2025. Initial setup with React and static versions
