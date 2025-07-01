@@ -43,6 +43,17 @@ export default function MeditationTimer() {
 
   return (
     <div className="spiritual-bg min-h-screen flex flex-col items-center justify-center text-white relative font-['Inter']">
+      {/* Full-screen red pulsing overlay */}
+      {timer.isPulsing && (
+        <div 
+          className="fixed inset-0 z-20 pointer-events-none animate-pulse"
+          style={{ 
+            background: 'radial-gradient(circle at center, hsla(0, 100%, 60%, 0.15) 0%, hsla(0, 100%, 60%, 0.08) 40%, transparent 70%)',
+            animation: 'pulse 2s ease-in-out'
+          }}
+        />
+      )}
+      
       {/* Floating stars */}
       {stars}
       

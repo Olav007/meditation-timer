@@ -13,22 +13,7 @@ export default function TimerDisplay({ hours, minutes, seconds, state, progress,
   const offset = circumference - (progress * circumference);
 
   return (
-    <div className={`relative flex items-center justify-center mb-16 transition-all duration-500 ${isPulsing ? 'animate-pulse' : ''}`}>
-      {/* Pulsing Red Overlay */}
-      {isPulsing && (
-        <div 
-          className="absolute inset-0 rounded-full animate-ping opacity-20"
-          style={{ 
-            background: 'radial-gradient(circle, hsla(0, 100%, 60%, 0.4) 0%, transparent 70%)',
-            width: '320px',
-            height: '320px',
-            left: '50%',
-            top: '50%',
-            transform: 'translate(-50%, -50%)'
-          }}
-        />
-      )}
-      
+    <div className="relative flex items-center justify-center mb-16">
       {/* Progress Ring */}
       <svg className="progress-ring absolute" width="300" height="300" viewBox="0 0 300 300">
         <circle

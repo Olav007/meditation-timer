@@ -184,7 +184,8 @@ export function useTimer(initialMinutes: number = 31) {
           }
           
           // Vibrate after 30 seconds have passed (every 30 seconds)
-          if (newTimeLeft > 0 && (totalTime - newTimeLeft) % 30 === 0 && (totalTime - newTimeLeft) > 0) {
+          const elapsedTime = totalTime - newTimeLeft;
+          if (newTimeLeft > 0 && elapsedTime >= 30 && elapsedTime % 30 === 0) {
             triggerVibration();
           }
           
