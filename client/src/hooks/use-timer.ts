@@ -50,12 +50,22 @@ export function useTimer(initialMinutes: number = 31) {
   }, []);
 
   const testSound = useCallback(() => {
-    // Play a single dong sound for testing
-    playDongSound();
-    if ('vibrate' in navigator) {
-      navigator.vibrate(200); // Test vibration
-    }
-  }, [playDongSound]);
+    // Start a 10-second preview session to test the end of meditation
+    const originalTotalTime = totalTime;
+    const originalTimeLeft = timeLeft;
+    const originalHasStarted = hasStarted;
+    const originalIsRunning = isRunning;
+    const originalIsPaused = isPaused;
+    
+    // Set up 10-second test session
+    setTotalTime(10);
+    setTimeLeft(10);
+    setIsRunning(true);
+    setHasStarted(true);
+    setIsPaused(false);
+    setIsCompleted(false);
+    wakeLock.request();
+  }, [totalTime, timeLeft, hasStarted, isRunning, isPaused]);
 
   const toggle = useCallback(() => {
     if (isRunning) {
