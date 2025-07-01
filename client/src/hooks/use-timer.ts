@@ -10,11 +10,17 @@ export function useTimer(initialMinutes: number = 31) {
   const [hasStarted, setHasStarted] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
   const [isPulsing, setIsPulsing] = useState(false);
+  const [overtimeSeconds, setOvertimeSeconds] = useState(0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  const hours = Math.floor(timeLeft / 3600);
-  const minutes = Math.floor((timeLeft % 3600) / 60);
-  const seconds = timeLeft % 60;
+  // Calculate display time (handle negative time for overtime)
+  const displayTime = isCompleted && overtimeSeconds > 0 ? -overtimeSeconds : timeLeft;
+  const isNegativeTime = isCompleted && overtimeSeconds > 0;
+  
+  const absTime = Math.abs(displayTime);
+  const hours = Math.floor(absTime / 3600);
+  const minutes = Math.floor((absTime % 3600) / 60);
+  const seconds = absTime % 60;
   const progress = totalTime > 0 ? (totalTime - timeLeft) / totalTime : 0;
 
   const playGongSound = useCallback((intensity: number = 0.3) => {
@@ -135,6 +141,7 @@ export function useTimer(initialMinutes: number = 31) {
     setIsPaused(false);
     setHasStarted(false);
     setIsCompleted(false);
+    setOvertimeSeconds(0);
     setTimeLeft(totalTime);
     wakeLock.release();
   }, [totalTime]);
@@ -144,19 +151,36 @@ export function useTimer(initialMinutes: number = 31) {
     setIsPaused(false);
     setHasStarted(false);
     setIsCompleted(false);
+    setOvertimeSeconds(0);
     setTimeLeft(totalTime);
     wakeLock.release();
   }, [totalTime]);
 
   const extendSession = useCallback((additionalMinutes: number) => {
     const additionalSeconds = additionalMinutes * 60;
-    setTotalTime(prev => prev + additionalSeconds);
-    setTimeLeft(prev => prev + additionalSeconds);
+    
+    if (isCompleted && overtimeSeconds > 0) {
+      // Subtract overtime from extension
+      const remainingExtension = additionalSeconds - overtimeSeconds;
+      if (remainingExtension > 0) {
+        setTimeLeft(remainingExtension);
+        setTotalTime(prev => prev + additionalSeconds);
+      } else {
+        setTimeLeft(0);
+        setOvertimeSeconds(overtimeSeconds - additionalSeconds);
+        return; // Don't restart if still in overtime
+      }
+      setOvertimeSeconds(0);
+    } else {
+      setTimeLeft(prev => prev + additionalSeconds);
+      setTotalTime(prev => prev + additionalSeconds);
+    }
+    
     setIsCompleted(false);
     setIsRunning(true);
     setHasStarted(true);
     wakeLock.request();
-  }, []);
+  }, [isCompleted, overtimeSeconds]);
 
   const setTimer = useCallback((minutes: number) => {
     const newTotalTime = minutes * 60;
@@ -189,10 +213,8 @@ export function useTimer(initialMinutes: number = 31) {
             triggerVibration();
           }
           
-          if (newTimeLeft <= 0) {
-            setIsRunning(false);
+          if (newTimeLeft <= 0 && !isCompleted) {
             setIsCompleted(true);
-            wakeLock.release();
             playCompletionSound();
             triggerVibration();
             
@@ -204,6 +226,11 @@ export function useTimer(initialMinutes: number = 31) {
               });
             }
             
+            setOvertimeSeconds(1); // Start counting overtime
+            return 0;
+          } else if (newTimeLeft <= 0 && isCompleted) {
+            // Continue running in overtime mode
+            setOvertimeSeconds(prev => prev + 1);
             return 0;
           }
           return newTimeLeft;
@@ -255,6 +282,8 @@ export function useTimer(initialMinutes: number = 31) {
     hasStarted,
     isCompleted,
     isPulsing,
+    isNegativeTime,
+    overtimeSeconds,
     state,
     toggle,
     reset,

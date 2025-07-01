@@ -24,6 +24,23 @@ export default function CompletionControls({ onEndSession, onExtendSession }: Co
         </p>
       </div>
 
+      {/* End Session Button */}
+      <div className="pb-4">
+        <Button
+          onClick={onEndSession}
+          className="px-8 py-3 rounded-full transition-all duration-150 touch-manipulation select-none hover:scale-105 active:scale-95"
+          style={{
+            background: 'var(--muted-white)',
+            color: 'var(--soft-gray)',
+            border: '1px solid hsla(255, 255, 255, 0.1)'
+          }}
+          onMouseDown={(e) => e.preventDefault()}
+          onTouchStart={(e) => e.preventDefault()}
+        >
+          End Session
+        </Button>
+      </div>
+
       {/* Extend Options */}
       <div className="space-y-4">
         <p className="text-sm" style={{ color: 'var(--soft-gray)' }}>
@@ -49,23 +66,6 @@ export default function CompletionControls({ onEndSession, onExtendSession }: Co
             </Button>
           ))}
         </div>
-      </div>
-
-      {/* End Session Button */}
-      <div className="pt-4">
-        <Button
-          onClick={onEndSession}
-          className="px-8 py-3 rounded-full transition-all duration-150 touch-manipulation select-none hover:scale-105 active:scale-95"
-          style={{
-            background: 'var(--muted-white)',
-            color: 'var(--soft-gray)',
-            border: '1px solid hsla(255, 255, 255, 0.1)'
-          }}
-          onMouseDown={(e) => e.preventDefault()}
-          onTouchStart={(e) => e.preventDefault()}
-        >
-          End Session
-        </Button>
       </div>
     </div>
   );

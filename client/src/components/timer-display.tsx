@@ -5,9 +5,10 @@ interface TimerDisplayProps {
   state: string;
   progress: number;
   isPulsing?: boolean;
+  isNegativeTime?: boolean;
 }
 
-export default function TimerDisplay({ hours, minutes, seconds, state, progress, isPulsing = false }: TimerDisplayProps) {
+export default function TimerDisplay({ hours, minutes, seconds, state, progress, isPulsing = false, isNegativeTime = false }: TimerDisplayProps) {
   // Progress circle calculations
   const circumference = 2 * Math.PI * 140; // radius = 140
   const offset = circumference - (progress * circumference);
@@ -32,6 +33,11 @@ export default function TimerDisplay({ hours, minutes, seconds, state, progress,
       {/* Timer Display */}
       <div className="text-center z-10">
         <div className="flex items-baseline justify-center">
+          {/* Negative sign for overtime */}
+          {isNegativeTime && (
+            <span className="text-red-400 mr-2 timer-minutes">-</span>
+          )}
+          
           {/* Hours - only show if > 0 */}
           {hours > 0 && (
             <>
