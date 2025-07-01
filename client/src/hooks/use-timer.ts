@@ -8,6 +8,7 @@ export function useTimer(initialMinutes: number = 31) {
   const [isRunning, setIsRunning] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
+  const [isCompleted, setIsCompleted] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const hours = Math.floor(timeLeft / 3600);
@@ -81,9 +82,29 @@ export function useTimer(initialMinutes: number = 31) {
     setIsRunning(false);
     setIsPaused(false);
     setHasStarted(false);
+    setIsCompleted(false);
     setTimeLeft(totalTime);
     wakeLock.release();
   }, [totalTime]);
+
+  const endSession = useCallback(() => {
+    setIsRunning(false);
+    setIsPaused(false);
+    setHasStarted(false);
+    setIsCompleted(false);
+    setTimeLeft(totalTime);
+    wakeLock.release();
+  }, [totalTime]);
+
+  const extendSession = useCallback((additionalMinutes: number) => {
+    const additionalSeconds = additionalMinutes * 60;
+    setTotalTime(prev => prev + additionalSeconds);
+    setTimeLeft(prev => prev + additionalSeconds);
+    setIsCompleted(false);
+    setIsRunning(true);
+    setHasStarted(true);
+    wakeLock.request();
+  }, []);
 
   const setTimer = useCallback((minutes: number) => {
     const newTotalTime = minutes * 60;
@@ -92,6 +113,7 @@ export function useTimer(initialMinutes: number = 31) {
     setIsRunning(false);
     setIsPaused(false);
     setHasStarted(false);
+    setIsCompleted(false);
     wakeLock.release();
   }, []);
 
@@ -113,7 +135,7 @@ export function useTimer(initialMinutes: number = 31) {
           
           if (newTimeLeft <= 0) {
             setIsRunning(false);
-            setHasStarted(false);
+            setIsCompleted(true);
             wakeLock.release();
             playCompletionSound();
             triggerVibration();
@@ -175,11 +197,14 @@ export function useTimer(initialMinutes: number = 31) {
     isRunning,
     isPaused,
     hasStarted,
+    isCompleted,
     state,
     toggle,
     reset,
     stop,
     setTimer,
-    testSound
+    testSound,
+    endSession,
+    extendSession
   };
 }

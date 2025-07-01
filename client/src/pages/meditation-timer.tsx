@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import TimerDisplay from "@/components/timer-display";
 import TimerControls from "@/components/timer-controls";
 import QuickSettings from "@/components/quick-settings";
+import CompletionControls from "@/components/completion-controls";
 import { useTimer } from "@/hooks/use-timer";
 import { usePWA } from "@/hooks/use-pwa";
 
@@ -51,7 +52,7 @@ export default function MeditationTimer() {
         {/* Header */}
         <header className="text-center mb-12 animate-float">
           <h1 className="text-3xl md:text-4xl font-light mb-2" style={{ color: 'var(--ethereal-cyan)' }}>
-            {timer.hasStarted ? 'Meditating' : 'Meditation Timer'}
+            {timer.isCompleted ? 'Session Complete' : timer.hasStarted ? 'Meditating' : 'Meditation Timer'}
           </h1>
         </header>
         
@@ -64,23 +65,33 @@ export default function MeditationTimer() {
           progress={timer.progress}
         />
         
-        {/* Timer Controls */}
-        <TimerControls
-          isRunning={timer.isRunning}
-          isPaused={timer.isPaused}
-          onToggle={timer.toggle}
-          onReset={timer.reset}
-          onStop={timer.stop}
-          onTestSound={timer.testSound}
-          showMeditationControls={timer.hasStarted}
-        />
-        
-        {/* Quick Settings - hidden during meditation */}
-        {!timer.hasStarted && (
-          <QuickSettings
-            currentMinutes={timer.totalMinutes}
-            onSetTimer={timer.setTimer}
+        {/* Completion Controls - shown when meditation is finished */}
+        {timer.isCompleted ? (
+          <CompletionControls
+            onEndSession={timer.endSession}
+            onExtendSession={timer.extendSession}
           />
+        ) : (
+          <>
+            {/* Timer Controls */}
+            <TimerControls
+              isRunning={timer.isRunning}
+              isPaused={timer.isPaused}
+              onToggle={timer.toggle}
+              onReset={timer.reset}
+              onStop={timer.stop}
+              onTestSound={timer.testSound}
+              showMeditationControls={timer.hasStarted}
+            />
+            
+            {/* Quick Settings - hidden during meditation */}
+            {!timer.hasStarted && (
+              <QuickSettings
+                currentMinutes={timer.totalMinutes}
+                onSetTimer={timer.setTimer}
+              />
+            )}
+          </>
         )}
         
         {/* PWA Install Prompt */}
