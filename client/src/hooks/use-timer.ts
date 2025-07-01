@@ -9,6 +9,7 @@ export function useTimer(initialMinutes: number = 31) {
   const [isPaused, setIsPaused] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
+  const [isPulsing, setIsPulsing] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const hours = Math.floor(timeLeft / 3600);
@@ -16,32 +17,73 @@ export function useTimer(initialMinutes: number = 31) {
   const seconds = timeLeft % 60;
   const progress = totalTime > 0 ? (totalTime - timeLeft) / totalTime : 0;
 
-  const playDongSound = useCallback(() => {
-    // Create a meditation bell/dong sound
+  const playGongSound = useCallback((intensity: number = 0.3) => {
+    // Trigger visual pulsing effect
+    setIsPulsing(true);
+    setTimeout(() => setIsPulsing(false), 2000);
+    
+    // Create a realistic gong sound with varying intensity
     const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
     
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
+    // Create multiple oscillators for rich harmonic content
+    const fundamentalOsc = audioContext.createOscillator();
+    const harmonic2 = audioContext.createOscillator();
+    const harmonic3 = audioContext.createOscillator();
     
-    // Lower frequency for a deeper, more calming sound
-    oscillator.frequency.setValueAtTime(440, audioContext.currentTime); // A note
-    oscillator.frequency.exponentialRampToValueAtTime(220, audioContext.currentTime + 0.5); // Drop to lower A
+    const fundamentalGain = audioContext.createGain();
+    const harmonic2Gain = audioContext.createGain();
+    const harmonic3Gain = audioContext.createGain();
+    const masterGain = audioContext.createGain();
     
-    gainNode.gain.setValueAtTime(0.4, audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 2);
+    // Connect oscillators to their gain nodes
+    fundamentalOsc.connect(fundamentalGain);
+    harmonic2.connect(harmonic2Gain);
+    harmonic3.connect(harmonic3Gain);
     
-    oscillator.start(audioContext.currentTime);
-    oscillator.stop(audioContext.currentTime + 2);
+    // Connect all to master gain
+    fundamentalGain.connect(masterGain);
+    harmonic2Gain.connect(masterGain);
+    harmonic3Gain.connect(masterGain);
+    masterGain.connect(audioContext.destination);
+    
+    // Set frequencies for gong-like sound
+    const baseFreq = 200; // Lower base frequency for gong
+    fundamentalOsc.frequency.setValueAtTime(baseFreq, audioContext.currentTime);
+    harmonic2.frequency.setValueAtTime(baseFreq * 1.5, audioContext.currentTime);
+    harmonic3.frequency.setValueAtTime(baseFreq * 2.3, audioContext.currentTime);
+    
+    // Frequency wobble for metallic effect
+    fundamentalOsc.frequency.exponentialRampToValueAtTime(baseFreq * 0.95, audioContext.currentTime + 3);
+    
+    // Set gains with varying intensity
+    const baseIntensity = Math.min(intensity, 0.8);
+    fundamentalGain.gain.setValueAtTime(baseIntensity, audioContext.currentTime);
+    harmonic2Gain.gain.setValueAtTime(baseIntensity * 0.3, audioContext.currentTime);
+    harmonic3Gain.gain.setValueAtTime(baseIntensity * 0.1, audioContext.currentTime);
+    
+    // Master gain envelope - starts weak, builds up quickly, then long decay
+    masterGain.gain.setValueAtTime(0.01, audioContext.currentTime);
+    masterGain.gain.exponentialRampToValueAtTime(baseIntensity, audioContext.currentTime + 0.1);
+    masterGain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 4);
+    
+    // Start all oscillators
+    const startTime = audioContext.currentTime;
+    fundamentalOsc.start(startTime);
+    harmonic2.start(startTime);
+    harmonic3.start(startTime);
+    
+    // Stop all oscillators
+    fundamentalOsc.stop(startTime + 4);
+    harmonic2.stop(startTime + 4);
+    harmonic3.stop(startTime + 4);
   }, []);
 
   const playCompletionSound = useCallback(() => {
-    // Triple dong for completion
-    playDongSound();
-    setTimeout(() => playDongSound(), 300);
-    setTimeout(() => playDongSound(), 600);
-  }, [playDongSound]);
+    // Triple gong for completion with increasing intensity
+    playGongSound(0.4);
+    setTimeout(() => playGongSound(0.6), 800);
+    setTimeout(() => playGongSound(0.8), 1600);
+  }, [playGongSound]);
 
   const triggerVibration = useCallback(() => {
     if ('vibrate' in navigator) {
@@ -57,15 +99,15 @@ export function useTimer(initialMinutes: number = 31) {
     const originalIsRunning = isRunning;
     const originalIsPaused = isPaused;
     
-    // Set up 10-second test session
-    setTotalTime(10);
-    setTimeLeft(10);
+    // Set up 5-second test session
+    setTotalTime(5);
+    setTimeLeft(5);
     setIsRunning(true);
     setHasStarted(true);
     setIsPaused(false);
     setIsCompleted(false);
     wakeLock.request();
-  }, [totalTime, timeLeft, hasStarted, isRunning, isPaused]);
+  }, [playGongSound]);
 
   const toggle = useCallback(() => {
     if (isRunning) {
@@ -133,9 +175,12 @@ export function useTimer(initialMinutes: number = 31) {
         setTimeLeft((prev) => {
           const newTimeLeft = prev - 1;
           
-          // Play dong every 10 seconds (but not at 0)
-          if (newTimeLeft > 0 && newTimeLeft % 10 === 0) {
-            playDongSound();
+          // Play gong every 15 seconds with increasing intensity
+          if (newTimeLeft > 0 && newTimeLeft % 15 === 0) {
+            const elapsedTime = totalTime - newTimeLeft;
+            const gongNumber = Math.floor(elapsedTime / 15);
+            const intensity = Math.min(0.2 + (gongNumber * 0.1), 0.6);
+            playGongSound(intensity);
           }
           
           // Vibrate after 30 seconds have passed (every 30 seconds)
@@ -176,7 +221,7 @@ export function useTimer(initialMinutes: number = 31) {
         intervalRef.current = null;
       }
     };
-  }, [isRunning, timeLeft, totalTime, playCompletionSound, playDongSound, triggerVibration]);
+  }, [isRunning, timeLeft, totalTime, playCompletionSound, playGongSound, triggerVibration]);
 
   // Handle page visibility change to maintain wake lock
   useEffect(() => {
@@ -208,6 +253,7 @@ export function useTimer(initialMinutes: number = 31) {
     isPaused,
     hasStarted,
     isCompleted,
+    isPulsing,
     state,
     toggle,
     reset,

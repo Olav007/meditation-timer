@@ -63,6 +63,7 @@ export default function MeditationTimer() {
           seconds={timer.seconds}
           state={timer.state}
           progress={timer.progress}
+          isPulsing={timer.isPulsing}
         />
         
         {/* Completion Controls - shown when meditation is finished */}
