@@ -1,21 +1,51 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import TimerDisplay from "@/components/timer-display";
 import TimerControls from "@/components/timer-controls";
 import QuickSettings from "@/components/quick-settings";
 import CompletionControls from "@/components/completion-controls";
 import { useTimer } from "@/hooks/use-timer";
 import { usePWA } from "@/hooks/use-pwa";
-import { Square, RotateCcw } from "lucide-react";
+import { Square, RotateCcw, CheckCircle } from "lucide-react";
 
 export default function MeditationTimer() {
   const timer = useTimer(30); // 30 minutes default
   const { installPrompt, installApp, hideInstallPrompt } = usePWA();
+  const [showUpdateNotification, setShowUpdateNotification] = useState(false);
 
-  // Register service worker
+  // Register service worker with auto-update
   useEffect(() => {
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js')
-        .then(() => console.log('Service Worker registered'))
+        .then((registration) => {
+          console.log('Service Worker registered');
+          
+          // Check for updates every 30 seconds
+          setInterval(() => {
+            registration.update();
+          }, 30000);
+          
+          // Listen for service worker messages
+          navigator.serviceWorker.addEventListener('message', (event) => {
+            if (event.data?.type === 'APP_UPDATED') {
+              console.log('App updated automatically');
+              setShowUpdateNotification(true);
+              
+              // Auto-hide notification after 3 seconds
+              setTimeout(() => {
+                setShowUpdateNotification(false);
+              }, 3000);
+              
+              // Optionally show a subtle system notification
+              if ('Notification' in window && Notification.permission === 'granted') {
+                new Notification('Meditation Timer Updated', {
+                  body: 'The app has been updated with the latest features.',
+                  icon: '/favicon.ico',
+                  silent: true
+                });
+              }
+            }
+          });
+        })
         .catch((error) => console.log('Service Worker registration failed:', error));
     }
   }, []);
@@ -145,6 +175,17 @@ export default function MeditationTimer() {
               />
             )}
           </>
+        )}
+        
+        {/* Auto-Update Notification */}
+        {showUpdateNotification && (
+          <div className="fixed top-6 right-6 z-40 bg-green-600/20 backdrop-blur-sm rounded-lg px-4 py-3 border border-green-500/30 flex items-center space-x-3 animate-slide-in">
+            <CheckCircle className="w-5 h-5 text-green-400" />
+            <div>
+              <div className="text-sm font-medium text-green-400">App Updated</div>
+              <div className="text-xs text-green-300">Latest features now available</div>
+            </div>
+          </div>
         )}
         
         {/* PWA Install Prompt */}

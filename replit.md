@@ -38,9 +38,10 @@ This is a full-stack Progressive Web Application (PWA) for a meditation timer bu
 
 ### PWA Features
 - **Installation Prompt**: Custom hook for PWA installation detection
-- **Service Worker**: Caching strategy for offline functionality
+- **Service Worker**: Caching strategy for offline functionality with auto-update
 - **Web Manifest**: App metadata for native-like installation
 - **Notifications**: Browser notification API for meditation completion
+- **Auto-Update**: Automatic background updates with visual notifications
 
 ### UI Components
 - **Timer Display**: Large, readable countdown with hours:minutes:seconds format

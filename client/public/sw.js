@@ -1,4 +1,4 @@
-const CACHE_NAME = 'meditation-timer-v1';
+const CACHE_NAME = 'meditation-timer-v2';
 const urlsToCache = [
   '/',
   '/meditation-timer',
@@ -16,6 +16,8 @@ self.addEventListener('install', (event) => {
         return cache.addAll(urlsToCache);
       })
   );
+  // Force activation of new service worker
+  self.skipWaiting();
 });
 
 // Fetch event
@@ -40,8 +42,21 @@ self.addEventListener('activate', (event) => {
           }
         })
       );
+    }).then(() => {
+      // Take control of all clients immediately
+      return self.clients.claim();
     })
   );
+  
+  // Notify clients about the update
+  self.clients.matchAll().then((clients) => {
+    clients.forEach((client) => {
+      client.postMessage({
+        type: 'APP_UPDATED',
+        message: 'App has been updated automatically'
+      });
+    });
+  });
 });
 
 // Background sync for notifications
