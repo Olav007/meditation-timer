@@ -6,7 +6,7 @@ interface QuickSettingsProps {
 }
 
 export default function QuickSettings({ currentMinutes, onSetTimer }: QuickSettingsProps) {
-  const presets = [5, 10, 20, 45, 60]; // 20 = 20 seconds for testing
+  const presets = [5, 10, 20, 30, 60]; // 20 = 20 seconds preparation phase
 
   return (
     <div className="flex justify-center space-x-4 mb-8">
@@ -27,7 +27,7 @@ export default function QuickSettings({ currentMinutes, onSetTimer }: QuickSetti
           onMouseDown={(e) => e.preventDefault()}
           onTouchStart={(e) => e.preventDefault()}
         >
-          {minutes === 20 ? '20s' : `${minutes}m`}
+          {minutes === 20 ? '20s prep' : `${minutes}m`}
         </Button>
       ))}
     </div>

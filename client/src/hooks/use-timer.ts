@@ -201,7 +201,7 @@ export function useTimer(initialMinutes: number = 31) {
   }, [isCompleted, overtimeSeconds]);
 
   const setTimer = useCallback((minutes: number) => {
-    // Special case: 20 = 20 seconds for testing, others are minutes
+    // Special case: 20 = 20 seconds preparation phase, others are minutes
     const newTotalTime = minutes === 20 ? 20 : minutes * 60;
     setTotalTime(newTotalTime);
     setTimeLeft(newTotalTime);
