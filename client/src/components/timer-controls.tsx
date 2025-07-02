@@ -45,8 +45,9 @@ export default function TimerControls({
           variant="ghost"
           className="w-12 h-12 rounded-full flex items-center justify-center hover:scale-110 active:scale-95 transition-all duration-150 touch-manipulation select-none"
           style={{ 
-            background: 'var(--muted-white)',
-            color: 'var(--soft-gray)'
+            background: 'hsla(0, 70%, 50%, 0.2)',
+            color: 'hsla(0, 70%, 60%, 1)',
+            border: '1px solid hsla(0, 70%, 50%, 0.3)'
           }}
           onMouseDown={(e) => e.preventDefault()}
           onTouchStart={(e) => e.preventDefault()}

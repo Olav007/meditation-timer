@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
-import { CheckCircle, Plus } from "lucide-react";
+import { CheckCircle, Plus, Square } from "lucide-react";
 
 interface CompletionControlsProps {
-  onEndSession: () => void;
+  onStopSession: () => void;
   onExtendSession: (minutes: number) => void;
   totalElapsedMinutes: number;
   totalElapsedSeconds: number;
@@ -10,7 +10,7 @@ interface CompletionControlsProps {
 }
 
 export default function CompletionControls({ 
-  onEndSession, 
+  onStopSession, 
   onExtendSession, 
   totalElapsedMinutes, 
   totalElapsedSeconds, 
@@ -45,20 +45,21 @@ export default function CompletionControls({
         </div>
       </div>
 
-      {/* End Session Button */}
+      {/* Stop Session Button */}
       <div className="pb-4">
         <Button
-          onClick={onEndSession}
-          className="px-8 py-3 rounded-full transition-all duration-150 touch-manipulation select-none hover:scale-105 active:scale-95"
+          onClick={onStopSession}
+          className="px-8 py-3 rounded-full transition-all duration-150 touch-manipulation select-none hover:scale-105 active:scale-95 flex items-center space-x-2"
           style={{
-            background: 'var(--muted-white)',
-            color: 'var(--soft-gray)',
-            border: '1px solid hsla(255, 255, 255, 0.1)'
+            background: 'hsla(0, 70%, 50%, 0.2)',
+            color: 'hsla(0, 70%, 60%, 1)',
+            border: '1px solid hsla(0, 70%, 50%, 0.3)'
           }}
           onMouseDown={(e) => e.preventDefault()}
           onTouchStart={(e) => e.preventDefault()}
         >
-          End Session
+          <Square className="w-4 h-4" />
+          <span>Stop Session</span>
         </Button>
       </div>
 

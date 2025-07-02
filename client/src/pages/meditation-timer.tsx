@@ -85,7 +85,7 @@ export default function MeditationTimer() {
         {/* Completion Controls - shown when meditation is finished */}
         {timer.isCompleted ? (
           <CompletionControls
-            onEndSession={timer.endSession}
+            onStopSession={timer.stop}
             onExtendSession={timer.extendSession}
             totalElapsedMinutes={timer.totalElapsedMinutes}
             totalElapsedSeconds={timer.totalElapsedSecondsDisplay}

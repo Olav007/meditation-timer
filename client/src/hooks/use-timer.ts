@@ -240,6 +240,7 @@ export function useTimer(initialMinutes: number = 31) {
             }
             
             setOvertimeSeconds(1); // Start counting overtime
+            // Don't stop the timer - continue running to count overtime
             return 0;
           } else if (newTimeLeft <= 0 && isCompleted) {
             // Continue running in overtime mode
