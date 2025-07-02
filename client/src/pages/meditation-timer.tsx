@@ -5,6 +5,7 @@ import QuickSettings from "@/components/quick-settings";
 import CompletionControls from "@/components/completion-controls";
 import { useTimer } from "@/hooks/use-timer";
 import { usePWA } from "@/hooks/use-pwa";
+import { Square, RotateCcw } from "lucide-react";
 
 export default function MeditationTimer() {
   const timer = useTimer(30); // 30 minutes default
@@ -57,8 +58,40 @@ export default function MeditationTimer() {
       {/* Floating stars */}
       {stars}
       
+      {/* Preparation Counter - upper left corner */}
+      {timer.isPreparationPhase && (
+        <div className="fixed top-6 left-6 z-30 bg-black/50 backdrop-blur-sm rounded-lg px-4 py-2 border border-gray-600">
+          <div className="text-center">
+            <div className="text-xs text-gray-400 mb-1">Preparation</div>
+            <div className="text-2xl font-mono" style={{ color: 'var(--ethereal-cyan)' }}>
+              {Math.ceil(timer.timeLeft - (timer.totalMinutes * 60))}
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Active Controls during Preparation - always visible */}
+      {timer.isPreparationPhase && (
+        <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-30 flex space-x-4">
+          <button
+            onClick={timer.stop}
+            className="w-16 h-16 rounded-xl bg-red-600 hover:bg-red-700 transition-all duration-300 text-white font-medium flex items-center justify-center"
+          >
+            <Square className="w-6 h-6" />
+          </button>
+          <button
+            onClick={timer.reset}
+            className="w-16 h-16 rounded-xl border border-gray-600 hover:border-blue-500 hover:bg-blue-500/10 transition-all duration-300 text-white font-medium flex items-center justify-center"
+          >
+            <RotateCcw className="w-6 h-6" />
+          </button>
+        </div>
+      )}
+
       {/* Main Container */}
-      <div className="container mx-auto px-4 py-8 max-w-2xl relative z-10">
+      <div className={`container mx-auto px-4 py-8 max-w-2xl relative z-10 transition-opacity duration-300 ${
+        timer.isPreparationPhase ? 'opacity-30' : 'opacity-100'
+      }`}>
         
         {/* Header */}
         <header className="text-center mb-12 animate-float">

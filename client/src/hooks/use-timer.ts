@@ -306,6 +306,7 @@ export function useTimer(initialMinutes: number = 30) {
     hours,
     minutes,
     seconds,
+    timeLeft,
     totalMinutes: Math.floor(totalTime / 60),
     progress,
     isRunning,
