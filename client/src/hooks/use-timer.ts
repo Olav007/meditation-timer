@@ -134,18 +134,23 @@ export function useTimer(initialMinutes: number = 31) {
       setHasStarted(true);
       if (!sessionStartTime) {
         setSessionStartTime(Date.now());
+        // Play initial gong when meditation starts
+        playGongSound(0.3);
       }
       wakeLock.request();
     }
-  }, [isRunning, sessionStartTime]);
+  }, [isRunning, sessionStartTime, playGongSound]);
 
   const reset = useCallback(() => {
     setIsRunning(true);
     setIsPaused(false);
     setHasStarted(true);
     setTimeLeft(totalTime);
+    setSessionStartTime(Date.now());
+    // Play initial gong when resetting to start fresh
+    playGongSound(0.3);
     wakeLock.request();
-  }, [totalTime]);
+  }, [totalTime, playGongSound]);
 
   const stop = useCallback(() => {
     setIsRunning(false);
@@ -196,7 +201,8 @@ export function useTimer(initialMinutes: number = 31) {
   }, [isCompleted, overtimeSeconds]);
 
   const setTimer = useCallback((minutes: number) => {
-    const newTotalTime = minutes * 60;
+    // Special case: 20 = 20 seconds for testing, others are minutes
+    const newTotalTime = minutes === 20 ? 20 : minutes * 60;
     setTotalTime(newTotalTime);
     setTimeLeft(newTotalTime);
     setIsRunning(false);
