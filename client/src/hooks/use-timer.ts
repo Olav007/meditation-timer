@@ -11,6 +11,7 @@ export function useTimer(initialMinutes: number = 31) {
   const [isCompleted, setIsCompleted] = useState(false);
   const [isPulsing, setIsPulsing] = useState(false);
   const [overtimeSeconds, setOvertimeSeconds] = useState(0);
+  const [sessionStartTime, setSessionStartTime] = useState<number | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Calculate display time (handle negative time for overtime)
@@ -22,6 +23,11 @@ export function useTimer(initialMinutes: number = 31) {
   const minutes = Math.floor((absTime % 3600) / 60);
   const seconds = absTime % 60;
   const progress = totalTime > 0 ? (totalTime - timeLeft) / totalTime : 0;
+
+  // Calculate total elapsed time since session start
+  const totalElapsedTime = sessionStartTime ? Math.floor((Date.now() - sessionStartTime) / 1000) : 0;
+  const totalElapsedMinutes = Math.floor(totalElapsedTime / 60);
+  const totalElapsedSecondsDisplay = totalElapsedTime % 60;
 
   const playGongSound = useCallback((intensity: number = 0.3) => {
     // Trigger visual pulsing effect
@@ -112,6 +118,8 @@ export function useTimer(initialMinutes: number = 31) {
     setHasStarted(true);
     setIsPaused(false);
     setIsCompleted(false);
+    setOvertimeSeconds(0);
+    setSessionStartTime(Date.now());
     wakeLock.request();
   }, [playGongSound]);
 
@@ -124,9 +132,12 @@ export function useTimer(initialMinutes: number = 31) {
       setIsRunning(true);
       setIsPaused(false);
       setHasStarted(true);
+      if (!sessionStartTime) {
+        setSessionStartTime(Date.now());
+      }
       wakeLock.request();
     }
-  }, [isRunning]);
+  }, [isRunning, sessionStartTime]);
 
   const reset = useCallback(() => {
     setIsRunning(true);
@@ -142,6 +153,7 @@ export function useTimer(initialMinutes: number = 31) {
     setHasStarted(false);
     setIsCompleted(false);
     setOvertimeSeconds(0);
+    setSessionStartTime(null);
     setTimeLeft(totalTime);
     wakeLock.release();
   }, [totalTime]);
@@ -152,6 +164,7 @@ export function useTimer(initialMinutes: number = 31) {
     setHasStarted(false);
     setIsCompleted(false);
     setOvertimeSeconds(0);
+    setSessionStartTime(null);
     setTimeLeft(totalTime);
     wakeLock.release();
   }, [totalTime]);
@@ -284,6 +297,9 @@ export function useTimer(initialMinutes: number = 31) {
     isPulsing,
     isNegativeTime,
     overtimeSeconds,
+    totalElapsedTime,
+    totalElapsedMinutes,
+    totalElapsedSecondsDisplay,
     state,
     toggle,
     reset,

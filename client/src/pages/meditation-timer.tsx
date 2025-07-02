@@ -83,6 +83,9 @@ export default function MeditationTimer() {
           <CompletionControls
             onEndSession={timer.endSession}
             onExtendSession={timer.extendSession}
+            totalElapsedMinutes={timer.totalElapsedMinutes}
+            totalElapsedSeconds={timer.totalElapsedSecondsDisplay}
+            overtimeSeconds={timer.overtimeSeconds}
           />
         ) : (
           <>

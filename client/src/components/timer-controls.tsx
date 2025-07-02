@@ -1,6 +1,7 @@
 
 import { Button } from "@/components/ui/button";
-import { Play, Pause, RotateCcw, Square, Volume2 } from "lucide-react";
+import { Play, Pause, RotateCcw, Square } from "lucide-react";
+import SettingsPanel from "./settings-panel";
 
 interface TimerControlsProps {
   isRunning: boolean;
@@ -89,20 +90,8 @@ export default function TimerControls({
       
       
 
-      {/* Test Sound Button */}
-      <Button
-        onClick={onTestSound}
-        variant="ghost"
-        className="w-12 h-12 rounded-full flex items-center justify-center hover:scale-110 active:scale-95 transition-all duration-150 touch-manipulation select-none"
-        style={{ 
-          background: 'var(--muted-white)',
-          color: 'var(--soft-gray)'
-        }}
-        onMouseDown={(e) => e.preventDefault()}
-        onTouchStart={(e) => e.preventDefault()}
-      >
-        <Volume2 className="w-5 h-5" />
-      </Button>
+      {/* Settings Panel */}
+      <SettingsPanel onTestSound={onTestSound} />
     </div>
   );
 }

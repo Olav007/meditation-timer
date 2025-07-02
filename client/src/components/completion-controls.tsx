@@ -4,9 +4,18 @@ import { CheckCircle, Plus } from "lucide-react";
 interface CompletionControlsProps {
   onEndSession: () => void;
   onExtendSession: (minutes: number) => void;
+  totalElapsedMinutes: number;
+  totalElapsedSeconds: number;
+  overtimeSeconds: number;
 }
 
-export default function CompletionControls({ onEndSession, onExtendSession }: CompletionControlsProps) {
+export default function CompletionControls({ 
+  onEndSession, 
+  onExtendSession, 
+  totalElapsedMinutes, 
+  totalElapsedSeconds, 
+  overtimeSeconds 
+}: CompletionControlsProps) {
   const extendOptions = [5, 10, 15];
 
   return (
@@ -19,9 +28,21 @@ export default function CompletionControls({ onEndSession, onExtendSession }: Co
         <h2 className="text-2xl font-light mb-2" style={{ color: 'var(--ethereal-cyan)' }}>
           Meditation Complete
         </h2>
-        <p className="text-sm" style={{ color: 'var(--soft-gray)' }}>
+        <p className="text-sm mb-4" style={{ color: 'var(--soft-gray)' }}>
           Well done! Your session has finished.
         </p>
+        
+        {/* Session Statistics */}
+        <div className="space-y-2 text-sm" style={{ color: 'var(--soft-gray)' }}>
+          <div className="flex justify-center items-center space-x-4">
+            <span>Total time: {totalElapsedMinutes}:{totalElapsedSeconds.toString().padStart(2, '0')}</span>
+            {overtimeSeconds > 0 && (
+              <span className="text-orange-400">
+                Overtime: {Math.floor(overtimeSeconds / 60)}:{(overtimeSeconds % 60).toString().padStart(2, '0')}
+              </span>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* End Session Button */}
