@@ -207,7 +207,7 @@ export function useTimer(initialMinutes: number = 31) {
   }, []);
 
   useEffect(() => {
-    if (isRunning && timeLeft > 0) {
+    if (isRunning && (timeLeft > 0 || isCompleted)) {
       intervalRef.current = setInterval(() => {
         setTimeLeft((prev) => {
           const newTimeLeft = prev - 1;
@@ -263,7 +263,7 @@ export function useTimer(initialMinutes: number = 31) {
         intervalRef.current = null;
       }
     };
-  }, [isRunning, timeLeft, totalTime, playCompletionSound, playGongSound, triggerVibration]);
+  }, [isRunning, timeLeft, totalTime, isCompleted, playCompletionSound, playGongSound, triggerVibration]);
 
   // Handle page visibility change to maintain wake lock
   useEffect(() => {
