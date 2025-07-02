@@ -2,9 +2,11 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { wakeLock } from '@/lib/wake-lock';
 
-export function useTimer(initialMinutes: number = 31) {
-  const [totalTime, setTotalTime] = useState(initialMinutes * 60);
-  const [timeLeft, setTimeLeft] = useState(initialMinutes * 60);
+export function useTimer(initialMinutes: number = 30) {
+  // All sessions get 20 seconds preparation + meditation time
+  const initialTime = (initialMinutes * 60) + 20;
+  const [totalTime, setTotalTime] = useState(initialTime);
+  const [timeLeft, setTimeLeft] = useState(initialTime);
   const [isRunning, setIsRunning] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
@@ -13,6 +15,9 @@ export function useTimer(initialMinutes: number = 31) {
   const [overtimeSeconds, setOvertimeSeconds] = useState(0);
   const [sessionStartTime, setSessionStartTime] = useState<number | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // Track if we're in preparation phase (first 20 seconds)
+  const isPreparationPhase = timeLeft > (totalTime - 20) && hasStarted;
 
   // Calculate display time (handle negative time for overtime)
   const displayTime = isCompleted && overtimeSeconds > 0 ? -overtimeSeconds : timeLeft;
@@ -201,8 +206,8 @@ export function useTimer(initialMinutes: number = 31) {
   }, [isCompleted, overtimeSeconds]);
 
   const setTimer = useCallback((minutes: number) => {
-    // Special case: 20 = 20 seconds preparation phase, others are minutes
-    const newTotalTime = minutes === 20 ? 20 : minutes * 60;
+    // All sessions get 20 seconds preparation + meditation time
+    const newTotalTime = (minutes * 60) + 20;
     setTotalTime(newTotalTime);
     setTimeLeft(newTotalTime);
     setIsRunning(false);
@@ -217,18 +222,24 @@ export function useTimer(initialMinutes: number = 31) {
       intervalRef.current = setInterval(() => {
         setTimeLeft((prev) => {
           const newTimeLeft = prev - 1;
+          const elapsedTime = totalTime - newTimeLeft;
           
-          // Play gong every 15 seconds with increasing intensity
-          if (newTimeLeft > 0 && newTimeLeft % 15 === 0) {
-            const elapsedTime = totalTime - newTimeLeft;
-            const gongNumber = Math.floor(elapsedTime / 15);
+          // Play gong every 15 seconds with increasing intensity (only during meditation, not preparation)
+          const isInMeditationPhase = elapsedTime >= 20; // After 20s preparation
+          if (newTimeLeft > 0 && newTimeLeft % 15 === 0 && isInMeditationPhase) {
+            const meditationElapsed = elapsedTime - 20; // Subtract preparation time
+            const gongNumber = Math.floor(meditationElapsed / 15);
             const intensity = Math.min(0.2 + (gongNumber * 0.1), 0.6);
             playGongSound(intensity);
           }
           
-          // Vibrate after 30 seconds have passed (every 30 seconds)
-          const elapsedTime = totalTime - newTimeLeft;
-          if (newTimeLeft > 0 && elapsedTime >= 30 && elapsedTime % 30 === 0) {
+          // Play gong when meditation phase begins (after 20s preparation)
+          if (elapsedTime === 20) {
+            playGongSound(0.3);
+          }
+          
+          // Vibrate after 30 seconds have passed (every 30 seconds) - but only during meditation phase
+          if (newTimeLeft > 0 && elapsedTime >= 50 && (elapsedTime - 20) % 30 === 0) {
             triggerVibration();
           }
           
@@ -284,7 +295,7 @@ export function useTimer(initialMinutes: number = 31) {
   }, [isRunning]);
 
   const state = isRunning 
-    ? 'Meditating...' 
+    ? (isPreparationPhase ? 'Preparing...' : 'Meditating...') 
     : isPaused 
       ? 'Paused' 
       : hasStarted 
@@ -303,6 +314,7 @@ export function useTimer(initialMinutes: number = 31) {
     isCompleted,
     isPulsing,
     isNegativeTime,
+    isPreparationPhase,
     overtimeSeconds,
     totalElapsedTime,
     totalElapsedMinutes,
