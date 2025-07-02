@@ -139,8 +139,7 @@ export function useTimer(initialMinutes: number = 30) {
       setHasStarted(true);
       if (!sessionStartTime) {
         setSessionStartTime(Date.now());
-        // Play initial gong when meditation starts
-        playGongSound(0.3);
+        // Meditation starts with preparation phase, gong plays after 20s
       }
       wakeLock.request();
     }
@@ -152,10 +151,9 @@ export function useTimer(initialMinutes: number = 30) {
     setHasStarted(true);
     setTimeLeft(totalTime);
     setSessionStartTime(Date.now());
-    // Play initial gong when resetting to start fresh
-    playGongSound(0.3);
+    // Reset starts with preparation phase, gong plays after 20s
     wakeLock.request();
-  }, [totalTime, playGongSound]);
+  }, [totalTime]);
 
   const stop = useCallback(() => {
     setIsRunning(false);
