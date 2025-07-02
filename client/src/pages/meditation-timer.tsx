@@ -76,6 +76,10 @@ export default function MeditationTimer() {
           progress={timer.progress}
           isPulsing={timer.isPulsing}
           isNegativeTime={timer.isNegativeTime}
+          isCompleted={timer.isCompleted}
+          totalElapsedMinutes={timer.totalElapsedMinutes}
+          totalElapsedSeconds={timer.totalElapsedSecondsDisplay}
+          overtimeSeconds={timer.overtimeSeconds}
         />
         
         {/* Completion Controls - shown when meditation is finished */}
