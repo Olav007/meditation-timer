@@ -11,6 +11,7 @@ export default function MeditationTimer() {
   const timer = useTimer(30); // 30 minutes default
   const { installPrompt, installApp, hideInstallPrompt } = usePWA();
   const [showUpdateNotification, setShowUpdateNotification] = useState(false);
+  const [serviceWorkerRegistration, setServiceWorkerRegistration] = useState<ServiceWorkerRegistration | null>(null);
 
   // Register service worker with auto-update
   useEffect(() => {
@@ -18,6 +19,7 @@ export default function MeditationTimer() {
       navigator.serviceWorker.register('/sw.js')
         .then((registration) => {
           console.log('Service Worker registered');
+          setServiceWorkerRegistration(registration);
           
           // Check for updates every 30 seconds
           setInterval(() => {
@@ -56,6 +58,18 @@ export default function MeditationTimer() {
       Notification.requestPermission();
     }
   }, []);
+
+  // Manual update function
+  const handleCheckUpdate = () => {
+    if (serviceWorkerRegistration) {
+      serviceWorkerRegistration.update().then(() => {
+        setShowUpdateNotification(true);
+        setTimeout(() => {
+          setShowUpdateNotification(false);
+        }, 3000);
+      });
+    }
+  };
 
   // Generate floating stars
   const stars = Array.from({ length: 8 }, (_, i) => (
@@ -164,6 +178,7 @@ export default function MeditationTimer() {
               onReset={timer.reset}
               onStop={timer.stop}
               onTestSound={timer.testSound}
+              onCheckUpdate={handleCheckUpdate}
               showMeditationControls={timer.hasStarted}
             />
             

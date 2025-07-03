@@ -10,6 +10,7 @@ interface TimerControlsProps {
   onReset: () => void;
   onStop: () => void;
   onTestSound: () => void;
+  onCheckUpdate?: () => void;
   showMeditationControls: boolean;
 }
 
@@ -20,6 +21,7 @@ export default function TimerControls({
   onReset, 
   onStop, 
   onTestSound,
+  onCheckUpdate,
   showMeditationControls 
 }: TimerControlsProps) {
   if (showMeditationControls) {
@@ -92,7 +94,7 @@ export default function TimerControls({
       
 
       {/* Settings Panel */}
-      <SettingsPanel onTestSound={onTestSound} />
+      <SettingsPanel onTestSound={onTestSound} onCheckUpdate={onCheckUpdate} />
     </div>
   );
 }

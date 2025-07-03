@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Settings, Volume2, X } from "lucide-react";
+import { Settings, Volume2, X, RefreshCw } from "lucide-react";
 
 interface SettingsPanelProps {
   onTestSound: () => void;
+  onCheckUpdate?: () => void;
 }
 
-export default function SettingsPanel({ onTestSound }: SettingsPanelProps) {
+export default function SettingsPanel({ onTestSound, onCheckUpdate }: SettingsPanelProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -86,6 +87,34 @@ export default function SettingsPanel({ onTestSound }: SettingsPanelProps) {
                 </Button>
                 <p className="text-xs" style={{ color: 'var(--soft-gray)' }}>
                   5-second preview of gong sounds and completion experience
+                </p>
+              </div>
+
+              {/* App Updates */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium" style={{ color: 'var(--soft-gray)' }}>
+                  App Updates
+                </label>
+                <Button
+                  onClick={() => {
+                    if (onCheckUpdate) {
+                      onCheckUpdate();
+                    }
+                    setIsOpen(false);
+                  }}
+                  variant="outline"
+                  className="w-full justify-start space-x-2"
+                  style={{
+                    background: 'hsla(120, 100%, 70%, 0.1)',
+                    color: 'var(--ethereal-cyan)',
+                    border: '1px solid hsla(120, 100%, 70%, 0.3)'
+                  }}
+                >
+                  <RefreshCw className="w-4 h-4" />
+                  <span>Check for Updates</span>
+                </Button>
+                <p className="text-xs" style={{ color: 'var(--soft-gray)' }}>
+                  Manually check for the latest app updates
                 </p>
               </div>
             </div>
